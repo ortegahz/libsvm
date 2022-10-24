@@ -1,0 +1,5 @@
+# install
+make
+
+# train
+easy.py ../heart_scale ../heart_scale
