@@ -1,5 +1,21 @@
 # install
 make
 
+# checkdata
+python checkdata.py /home/manu/tmp/hpe_train
+python checkdata.py /home/manu/tmp/hpe_test
+
+# subset
+python subset.py /home/manu/tmp/hpe_train 5000 /home/manu/tmp/hpe_train_pick
+python subset.py /home/manu/tmp/hpe_test 5000 /home/manu/tmp/hpe_test_pick
+
+sh subset.sh 5000
+
 # train
-easy.py ../heart_scale ../heart_scale
+python easy.py ../heart_scale ../heart_scale
+
+python easy.py /home/manu/tmp/hpe_train_pick /home/manu/tmp/hpe_test_pick
+python easy.py /home/manu/tmp/hpe_train /home/manu/tmp/hpe_test
+
+# test
+./svm-predict ./tools/hpe_test_pick.scale ./tools/hpe_train_pick.model ./tools/hpe_test_pick.predict

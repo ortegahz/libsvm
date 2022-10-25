@@ -20,3 +20,23 @@ tools/heart_scale\.scale
 tools/heart_scale\.scale\.out
 
 tools/heart_scale\.scale\.png
+
+tools/hpe_train\.scale\.out
+
+tools/hpe_train\.range
+
+tools/hpe_train\.scale
+
+tools/hpe_train_pick\.scale\.png
+
+tools/hpe_train_pick\.scale\.out
+
+tools/hpe_train_pick\.scale
+
+tools/hpe_train_pick\.range
+
+tools/hpe_train_pick\.model
+
+tools/hpe_test_pick\.scale
+
+tools/hpe_test_pick\.predict
