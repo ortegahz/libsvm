@@ -53,6 +53,28 @@ def process_options(argv):
 
     return dataset, subset_size, method, subset_file, rest_file
 
+def balance_selection(dataset, subset_size):
+    labels = [line.split(None,1)[0] for line in open(dataset)]
+    label_linenums = defaultdict(list)
+    for i, label in enumerate(labels):
+        label_linenums[label] += [i]
+
+    l = len(labels)
+    remaining = subset_size
+    ret = []
+
+    # classes with fewer data are sampled first; otherwise
+    # some rare classes may not be selected
+    for label in sorted(label_linenums, key=lambda x: len(label_linenums[x])):
+        linenums = label_linenums[label]
+        label_size = len(linenums)
+        # at least one instance per class
+        # s = int(min(remaining, max(1, math.ceil(label_size*(float(subset_size)/l)))))
+        s = int(subset_size / len(label_linenums))
+        remaining -= s
+        ret += [linenums[i] for i in random.sample(xrange(label_size), s)]
+    return sorted(ret)
+
 def random_selection(dataset, subset_size):
     l = sum(1 for line in open(dataset,'r'))
     return sorted(random.sample(xrange(l), subset_size))
@@ -95,7 +117,8 @@ def main(argv=sys.argv):
     if method == 0:
         selected_lines = stratified_selection(dataset, subset_size)
     elif method == 1:
-        selected_lines = random_selection(dataset, subset_size)
+        # selected_lines = random_selection(dataset, subset_size)
+        selected_lines = balance_selection(dataset, subset_size)
 
     #select instances based on selected_lines
     dataset = open(dataset,'r')

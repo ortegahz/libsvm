@@ -40,3 +40,5 @@ tools/hpe_train_pick\.model
 tools/hpe_test_pick\.scale
 
 tools/hpe_test_pick\.predict
+
+svm-predict-python
