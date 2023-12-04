@@ -1,3 +1,4 @@
+#include <sys/time.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -2689,7 +2690,14 @@ double svm_predict(const svm_model *model, const svm_node *x)
 		dec_values = Malloc(double, 1);
 	else
 		dec_values = Malloc(double, nr_class*(nr_class-1)/2);
+
+	struct timeval start;
+	struct timeval end;
+	gettimeofday(&start, NULL);
 	double pred_result = svm_predict_values(model, x, dec_values);
+	gettimeofday(&end, NULL);
+	printf("svm_predict_values -> %ds %dus\n", end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
+
 	free(dec_values);
 	return pred_result;
 }
