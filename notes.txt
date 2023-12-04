@@ -1,0 +1,2 @@
+# quick start
+easy.py training_file

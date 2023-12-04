@@ -1,0 +1,10 @@
+
+\.idea/
+
+svm\.o
+
+svm-predict
+
+svm-scale
+
+svm-train
