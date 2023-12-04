@@ -8,3 +8,15 @@ svm-predict
 svm-scale
 
 svm-train
+
+*.png
+
+*.out
+
+*.scale
+
+*.range
+
+*.predict
+
+*.model
