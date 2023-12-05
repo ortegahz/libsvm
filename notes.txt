@@ -3,4 +3,4 @@ python easy.py ../heart_scale ../heart_scale
 python easy.py /home/manu/tmp/smartsd /home/manu/tmp/smartsd
 
 # test
-./svm-predict ./tools/smartsd_single.scale ./tools/smartsd.model ./tools/smartsd_single.predict
+./svm-predict -b 1 ./tools/smartsd_single.scale ./tools/smartsd.model ./tools/smartsd_single.predict

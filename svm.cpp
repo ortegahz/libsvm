@@ -1828,12 +1828,15 @@ static void sigmoid_train(
 
 static double sigmoid_predict(double decision_value, double A, double B)
 {
-	double fApB = decision_value*A+B;
-	// 1-p used later; avoid catastrophic cancellation
-	if (fApB >= 0)
-		return exp(-fApB)/(1.0+exp(-fApB));
-	else
-		return 1.0/(1+exp(fApB)) ;
+	// double fApB = decision_value*A+B;
+	// // 1-p used later; avoid catastrophic cancellation
+	// printf("fApB --> %lf \n", fApB);
+	// if (fApB >= 0)
+	// 	return exp(-fApB)/(1.0+exp(-fApB));
+	// else
+	// 	return 1.0/(1+exp(fApB)) ;
+
+	return 1.0/(1+exp(-decision_value)) ;
 }
 
 // Method 2 from the multiclass_prob paper by Wu, Lin, and Weng to predict probabilities
@@ -2661,6 +2664,7 @@ double svm_predict_values(const svm_model *model, const svm_node *x, double* dec
 				sum -= model->rho[p];
 				dec_values[p] = sum;
 
+				printf("dec_values[p] -> %lf\n", dec_values[p]);
 				if(dec_values[p] > 0)
 					++vote[i];
 				else
@@ -2669,9 +2673,13 @@ double svm_predict_values(const svm_model *model, const svm_node *x, double* dec
 			}
 
 		int vote_max_idx = 0;
+		printf("vote[%d] -> %d\n", 0, vote[0]);
 		for(i=1;i<nr_class;i++)
+		{
+			printf("vote[%d] -> %d\n", i, vote[i]);
 			if(vote[i] > vote[vote_max_idx])
 				vote_max_idx = i;
+		}
 
 		free(kvalue);
 		free(start);
@@ -2691,12 +2699,14 @@ double svm_predict(const svm_model *model, const svm_node *x)
 	else
 		dec_values = Malloc(double, nr_class*(nr_class-1)/2);
 
-	struct timeval start;
-	struct timeval end;
-	gettimeofday(&start, NULL);
+	// struct timeval start;
+	// struct timeval end;
+	// gettimeofday(&start, NULL);
 	double pred_result = svm_predict_values(model, x, dec_values);
-	gettimeofday(&end, NULL);
-	printf("svm_predict_values -> %ds %dus\n", end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
+	printf("pred_result -> %lf\n", pred_result);
+	printf("*dec_values -> %lf\n", *dec_values);
+	// gettimeofday(&end, NULL);
+	// printf("svm_predict_values -> %ds %dus\n", end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
 
 	free(dec_values);
 	return pred_result;
@@ -2711,7 +2721,9 @@ double svm_predict_probability(
 		int i;
 		int nr_class = model->nr_class;
 		double *dec_values = Malloc(double, nr_class*(nr_class-1)/2);
-		svm_predict_values(model, x, dec_values);
+		double pred_result = svm_predict_values(model, x, dec_values);
+		printf("pred_result -> %lf\n", pred_result);
+		printf("*dec_values -> %lf\n", *dec_values);
 
 		double min_prob=1e-7;
 		double **pairwise_prob=Malloc(double *,nr_class);
@@ -2721,6 +2733,7 @@ double svm_predict_probability(
 		for(i=0;i<nr_class;i++)
 			for(int j=i+1;j<nr_class;j++)
 			{
+				printf("sigmoid_predict(dec_values[k],model->probA[k],model->probB[k]) --> %lf \n", sigmoid_predict(dec_values[k],model->probA[k],model->probB[k]));
 				pairwise_prob[i][j]=min(max(sigmoid_predict(dec_values[k],model->probA[k],model->probB[k]),min_prob),1-min_prob);
 				pairwise_prob[j][i]=1-pairwise_prob[i][j];
 				k++;
@@ -2733,6 +2746,8 @@ double svm_predict_probability(
 		else
 			multiclass_probability(nr_class,pairwise_prob,prob_estimates);
 
+		printf("prob_estimates[0] --> %lf \n", prob_estimates[0]);
+		printf("prob_estimates[1] --> %lf \n", prob_estimates[1]);
 		int prob_max_idx = 0;
 		for(i=1;i<nr_class;i++)
 			if(prob_estimates[i] > prob_estimates[prob_max_idx])
@@ -2741,6 +2756,7 @@ double svm_predict_probability(
 			free(pairwise_prob[i]);
 		free(dec_values);
 		free(pairwise_prob);
+		printf("model->label[prob_max_idx] --> %d \n", model->label[prob_max_idx]);
 		return model->label[prob_max_idx];
 	}
 	else if(model->param.svm_type == ONE_CLASS && model->prob_density_marks!=NULL)
