@@ -2699,14 +2699,14 @@ double svm_predict(const svm_model *model, const svm_node *x)
 	else
 		dec_values = Malloc(double, nr_class*(nr_class-1)/2);
 
-	// struct timeval start;
-	// struct timeval end;
-	// gettimeofday(&start, NULL);
+	struct timeval start;
+	struct timeval end;
+	gettimeofday(&start, NULL);
 	double pred_result = svm_predict_values(model, x, dec_values);
 	printf("pred_result -> %lf\n", pred_result);
 	printf("*dec_values -> %lf\n", *dec_values);
-	// gettimeofday(&end, NULL);
-	// printf("svm_predict_values -> %ds %dus\n", end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
+	gettimeofday(&end, NULL);
+	printf("svm_predict_values -> %ds %dus\n", end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
 
 	free(dec_values);
 	return pred_result;
@@ -2721,7 +2721,14 @@ double svm_predict_probability(
 		int i;
 		int nr_class = model->nr_class;
 		double *dec_values = Malloc(double, nr_class*(nr_class-1)/2);
+		struct timeval start;
+		struct timeval end;
+		gettimeofday(&start, NULL);
 		double pred_result = svm_predict_values(model, x, dec_values);
+		printf("pred_result -> %lf\n", pred_result);
+		printf("*dec_values -> %lf\n", *dec_values);
+		gettimeofday(&end, NULL);
+		printf("svm_predict_values -> %ds %dus\n", end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
 		printf("pred_result -> %lf\n", pred_result);
 		printf("*dec_values -> %lf\n", *dec_values);
 

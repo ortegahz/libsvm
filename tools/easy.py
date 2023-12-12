@@ -45,7 +45,7 @@ if len(sys.argv) > 2:
     scaled_test_file = file_name + ".scale"
     predict_test_file = file_name + ".predict"
 
-cmd = '{0} -s "{1}" "{2}" > "{3}"'.format(svmscale_exe, range_file, train_pathname, scaled_file)
+cmd = '{0} -l 0 -u 1 -s "{1}" "{2}" > "{3}"'.format(svmscale_exe, range_file, train_pathname, scaled_file)
 print('Scaling training data...')
 Popen(cmd, shell=True, stdout=PIPE).communicate()
 
