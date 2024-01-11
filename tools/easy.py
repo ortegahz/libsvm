@@ -68,7 +68,7 @@ Popen(cmd, shell=True, stdout=PIPE).communicate()
 
 print('Output model: {0}'.format(model_file))
 if len(sys.argv) > 2:
-    cmd = '{0} -r "{1}" "{2}" > "{3}"'.format(svmscale_exe, range_file, test_pathname, scaled_test_file)
+    cmd = '{0} -l 0 -u 1 -r "{1}" "{2}" > "{3}"'.format(svmscale_exe, range_file, test_pathname, scaled_test_file)
     print('Scaling testing data...')
     Popen(cmd, shell=True, stdout=PIPE).communicate()
 
