@@ -293,51 +293,54 @@ void exit_with_help()
 
 int main(int argc, char **argv)
 {
-	FILE *input, *output;
-	int i;
-	// parse options
-	for (i = 1; i < argc; i++)
-	{
-		if (argv[i][0] != '-')
-			break;
-		++i;
-		switch (argv[i - 1][1])
-		{
-		case 'b':
-			predict_probability = atoi(argv[i]);
-			break;
-		case 'q':
-			info = &print_null;
-			i--;
-			break;
-		default:
-			fprintf(stderr, "Unknown option: -%c\n", argv[i - 1][1]);
-			exit_with_help();
-		}
-	}
+	// FILE *input, *output;
+	FILE *input;
+	// int i;
+	// // parse options
+	// for (i = 1; i < argc; i++)
+	// {
+	// 	if (argv[i][0] != '-')
+	// 		break;
+	// 	++i;
+	// 	switch (argv[i - 1][1])
+	// 	{
+	// 	case 'b':
+	// 		predict_probability = atoi(argv[i]);
+	// 		break;
+	// 	case 'q':
+	// 		info = &print_null;
+	// 		i--;
+	// 		break;
+	// 	default:
+	// 		fprintf(stderr, "Unknown option: -%c\n", argv[i - 1][1]);
+	// 		exit_with_help();
+	// 	}
+	// }
 
-	if (i >= argc - 2)
-		exit_with_help();
+	// if (i >= argc - 2)
+	// 	exit_with_help();
 
 	// input = fopen(argv[i], "r");
 	input = fmemopen(__tools_smartsd_scale, __tools_smartsd_scale_len, "r");
 	if (input == NULL)
 	{
-		fprintf(stderr, "can't open input file %s\n", argv[i]);
+		fprintf(stderr, "can't open input file \n");
+		// fprintf(stderr, "can't open input file %s\n", argv[i]);
 		exit(1);
 	}
 
-	output = fopen(argv[i + 2], "w");
-	if (output == NULL)
-	{
-		fprintf(stderr, "can't open output file %s\n", argv[i + 2]);
-		exit(1);
-	}
+	// output = fopen(argv[i + 2], "w");
+	// if (output == NULL)
+	// {
+	// 	fprintf(stderr, "can't open output file %s\n", argv[i + 2]);
+	// 	exit(1);
+	// }
 
 	// if ((model = svm_load_model(argv[i + 1])) == 0)
 	if ((model = svm_load_model_buff()) == 0)
 	{
-		fprintf(stderr, "can't open model file %s\n", argv[i + 1]);
+		fprintf(stderr, "can't open model file \n");
+		// fprintf(stderr, "can't open model file %s\n", argv[i + 1]);
 		exit(1);
 	}
 
@@ -362,6 +365,6 @@ int main(int argc, char **argv)
 	free(x);
 	free(line);
 	fclose(input);
-	fclose(output);
+	// fclose(output);
 	return 0;
 }
