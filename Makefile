@@ -12,10 +12,12 @@ endif
 # CFLAGS += -fopenmp
 # SHARED_LIB_FLAG += -fopenmp
 
-all: svm-train svm-predict svm-scale
+all: svm-train svm-predict svm-scale svm-predict-buff
 
 lib: svm.o
 	$(CXX) $(SHARED_LIB_FLAG) svm.o -o libsvm.so.$(SHVER)
+svm-predict-buff: svm-predict-buff.c svm.o
+	$(CXX) $(CFLAGS) svm-predict-buff.c svm.o -o svm-predict-buff -lm
 svm-predict: svm-predict.c svm.o
 	$(CXX) $(CFLAGS) svm-predict.c svm.o -o svm-predict -lm
 svm-train: svm-train.c svm.o

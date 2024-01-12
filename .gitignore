@@ -20,3 +20,5 @@ svm-train
 *.predict
 
 *.model
+
+svm-predict-buff
