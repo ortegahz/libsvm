@@ -26,3 +26,5 @@ svm-predict-buff
 \.vscode/
 
 model_data\.h
+
+input_data\.h

@@ -10,3 +10,4 @@ python easy.py /home/manu/tmp/smartsd /home/manu/tmp/smartsd
 
 # xxd
 xxd -i ./tools/smartsd.model > model_data.h
+xxd -i ./tools/smartsd.scale > input_data.h
