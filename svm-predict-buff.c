@@ -213,7 +213,8 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	if ((model = svm_load_model(argv[i + 1])) == 0)
+	// if ((model = svm_load_model(argv[i + 1])) == 0)
+	if ((model = svm_load_model_buff()) == 0)
 	{
 		fprintf(stderr, "can't open model file %s\n", argv[i + 1]);
 		exit(1);

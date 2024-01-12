@@ -7,3 +7,6 @@ python easy.py /home/manu/tmp/smartsd /home/manu/tmp/smartsd
 ./svm-predict -b 0 ./tools/smartsd_single.scale ./tools/smartsd.model ./tools/smartsd_single.predict
 
 ./svm-predict-buff -b 0 ./tools/smartsd.scale ./tools/smartsd.model ./tools/smartsd.predict
+
+# xxd
+xxd -i ./tools/smartsd.model > model_data.h

@@ -22,3 +22,7 @@ svm-train
 *.model
 
 svm-predict-buff
+
+\.vscode/
+
+model_data\.h

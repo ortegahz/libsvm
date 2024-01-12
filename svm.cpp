@@ -9,6 +9,7 @@
 #include <limits.h>
 #include <locale.h>
 #include "svm.h"
+#include "model_data.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -3110,6 +3111,119 @@ bool read_model_header(FILE *fp, svm_model *model)
 svm_model *svm_load_model(const char *model_file_name)
 {
 	FILE *fp = fopen(model_file_name, "rb");
+	if (fp == NULL)
+		return NULL;
+
+	char *old_locale = setlocale(LC_ALL, NULL);
+	if (old_locale)
+	{
+		old_locale = strdup(old_locale);
+	}
+	setlocale(LC_ALL, "C");
+
+	// read parameters
+
+	svm_model *model = Malloc(svm_model, 1);
+	model->rho = NULL;
+	model->probA = NULL;
+	model->probB = NULL;
+	model->prob_density_marks = NULL;
+	model->sv_indices = NULL;
+	model->label = NULL;
+	model->nSV = NULL;
+
+	// read header
+	if (!read_model_header(fp, model))
+	{
+		fprintf(stderr, "ERROR: fscanf failed to read model\n");
+		setlocale(LC_ALL, old_locale);
+		free(old_locale);
+		free(model->rho);
+		free(model->label);
+		free(model->nSV);
+		free(model);
+		return NULL;
+	}
+
+	// read sv_coef and SV
+
+	int elements = 0;
+	long pos = ftell(fp);
+
+	max_line_len = 1024;
+	line = Malloc(char, max_line_len);
+	char *p, *endptr, *idx, *val;
+
+	while (readline(fp) != NULL)
+	{
+		p = strtok(line, ":");
+		while (1)
+		{
+			p = strtok(NULL, ":");
+			if (p == NULL)
+				break;
+			++elements;
+		}
+	}
+	elements += model->l;
+
+	fseek(fp, pos, SEEK_SET);
+
+	int m = model->nr_class - 1;
+	int l = model->l;
+	model->sv_coef = Malloc(double *, m);
+	int i;
+	for (i = 0; i < m; i++)
+		model->sv_coef[i] = Malloc(double, l);
+	model->SV = Malloc(svm_node *, l);
+	svm_node *x_space = NULL;
+	if (l > 0)
+		x_space = Malloc(svm_node, elements);
+
+	int j = 0;
+	for (i = 0; i < l; i++)
+	{
+		readline(fp);
+		model->SV[i] = &x_space[j];
+
+		p = strtok(line, " \t");
+		model->sv_coef[0][i] = strtod(p, &endptr);
+		for (int k = 1; k < m; k++)
+		{
+			p = strtok(NULL, " \t");
+			model->sv_coef[k][i] = strtod(p, &endptr);
+		}
+
+		while (1)
+		{
+			idx = strtok(NULL, ":");
+			val = strtok(NULL, " \t");
+
+			if (val == NULL)
+				break;
+			x_space[j].index = (int)strtol(idx, &endptr, 10);
+			x_space[j].value = strtod(val, &endptr);
+
+			++j;
+		}
+		x_space[j++].index = -1;
+	}
+	free(line);
+
+	setlocale(LC_ALL, old_locale);
+	free(old_locale);
+
+	if (ferror(fp) != 0 || fclose(fp) != 0)
+		return NULL;
+
+	model->free_sv = 1; // XXX
+	return model;
+}
+
+svm_model *svm_load_model_buff()
+{
+	// FILE *fp = fopen(model_file_name, "rb");
+	FILE *fp = fmemopen(__tools_smartsd_model, __tools_smartsd_model_len, "r");
 	if (fp == NULL)
 		return NULL;
 
