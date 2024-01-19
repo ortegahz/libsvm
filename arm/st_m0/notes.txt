@@ -1,0 +1,9 @@
+# web sites
+https://www.st.com/en/evaluation-tools/stm32-nucleo-boards.html
+
+https://m.tb.cn/h.5K5VTnjgomBhezW?tk=fRXOW7IGwMf 
+3735749701192246637
+
+# board
+NUCLEO-G0B1RE Nucleo-64
+g0b1ret6u
