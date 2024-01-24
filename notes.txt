@@ -3,8 +3,11 @@ python easy.py ../heart_scale ../heart_scale
 python easy.py /home/manu/tmp/smartsd /home/manu/tmp/smartsd
 
 # test
+./svm-scale -l 0 -u 1 -r ./tools/smartsd.range /home/manu/tmp/smartsd | tee ./tools/smartsd.scale
+
 ./svm-predict -b 1 ./tools/smartsd.scale ./tools/smartsd_time.model ./tools/smartsd_time.predict
 ./svm-predict -b 0 ./tools/smartsd_single.scale ./tools/smartsd.model ./tools/smartsd_single.predict
+./svm-predict -b 0 ./tools/smartsd.scale ./tools/smartsd.model ./tools/smartsd_single.predict
 
 ./svm-predict-buff
 
