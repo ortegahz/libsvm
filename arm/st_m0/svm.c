@@ -22,11 +22,11 @@ void read_model_header_hard_code(struct svm_model *model)
 	param->coef0 = 0.0;
 	model->nr_class = 2;
 	printf("model->nr_class -> %d \n", model->nr_class);
-	model->l = 248;
+	model->l = 122;
 	model->rho = Malloc(double, 1);
 	if (model->rho == NULL)
 		printf("model->rho Malloc error !!! \n");
-	model->rho[0] = 45.508316488952168;
+	model->rho[0] = 38.575724917638027;
 	model->label = Malloc(int, 2);
 	if (model->label == NULL)
 		printf("model->label Malloc error !!! \n");
@@ -35,15 +35,15 @@ void read_model_header_hard_code(struct svm_model *model)
 	model->probA = Malloc(double, 1);
 	if (model->probA == NULL)
 		printf("model->probA Malloc error !!! \n");
-	model->probA[0] = -0.26574469547452156;
+	model->probA[0] = -0.25118496751804503;
 	model->probB = Malloc(double, 1);
-	model->probB[0] = -0.1356215583183184;
+	model->probB[0] = 0.011325654084168952;
 	// prob_density_marks
 	model->nSV = Malloc(int, 2);
 	if (model->nSV == NULL)
 		printf("model->nSV Malloc error !!! \n");
-	model->nSV[0] = 122;
-	model->nSV[1] = 126;
+	model->nSV[0] = 59;
+	model->nSV[1] = 63;
 	printf("model->nSV[1] -> %d \n", model->nSV[1]);
 }
 

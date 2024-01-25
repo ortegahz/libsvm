@@ -2691,7 +2691,10 @@ double svm_predict_values(const svm_model *model, const svm_node *x, double *dec
 #pragma omp parallel for private(i) schedule(guided)
 #endif
 		for (i = 0; i < l; i++)
+		{
 			kvalue[i] = Kernel::k_function(x, model->SV[i], model->param);
+			// printf("kvalue[%d] --> %lf \n", i, kvalue[i]);
+		}
 
 		int *start = Malloc(int, nr_class);
 		start[0] = 0;
@@ -3218,10 +3221,10 @@ svm_model *svm_load_model(const char *model_file_name)
 
 	// for (int i = 0; i < elements; i++)
 	// {
-	// 	printf("x[%d] --> %d, %lf \n", i, (x_space + i)->index, (x_space + i)->value);
+	// 	printf("x_space[%d] --> %d, %lf \n", i, (x_space + i)->index, (x_space + i)->value);
 	// }
 
-	// for (int i = 0; i < elements * sizeof(struct svm_node); i++)
+	// for (long unsigned int i = 0; i < elements * sizeof(struct svm_node); i++)
 	// {
 	// 	unsigned char *p = (unsigned char *)x_space;
 	// 	printf("0x%x,", p[i]);
@@ -3240,7 +3243,7 @@ svm_model *svm_load_model(const char *model_file_name)
 	// {
 	// 	printf("model->sv_coef[%d] \n", i);
 	// 	unsigned char *p = (unsigned char *)model->sv_coef[i];
-	// 	for (int j = 0; j < l * sizeof(double); j++)
+	// 	for (long unsigned int j = 0; j < l * sizeof(double); j++)
 	// 	{
 	// 		printf("0x%x,", p[j]);
 	// 	}
