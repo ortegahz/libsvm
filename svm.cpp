@@ -2764,7 +2764,7 @@ double svm_predict(const svm_model *model, const svm_node *x)
 	printf("pred_result -> %lf\n", pred_result);
 	printf("*dec_values -> %lf\n", *dec_values);
 	gettimeofday(&end, NULL);
-	printf("svm_predict_values -> %ds %dus\n", end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
+	printf("svm_predict_values -> %lds %ldus\n", end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
 
 	free(dec_values);
 	return pred_result;
@@ -2786,7 +2786,7 @@ double svm_predict_probability(
 		printf("pred_result -> %lf\n", pred_result);
 		printf("*dec_values -> %lf\n", *dec_values);
 		gettimeofday(&end, NULL);
-		printf("svm_predict_values -> %ds %dus\n", end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
+		printf("svm_predict_values -> %lds %ldus\n", end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
 		printf("pred_result -> %lf\n", pred_result);
 		printf("*dec_values -> %lf\n", *dec_values);
 
@@ -3215,6 +3215,37 @@ svm_model *svm_load_model(const char *model_file_name)
 
 	if (ferror(fp) != 0 || fclose(fp) != 0)
 		return NULL;
+
+	// for (int i = 0; i < elements; i++)
+	// {
+	// 	printf("x[%d] --> %d, %lf \n", i, (x_space + i)->index, (x_space + i)->value);
+	// }
+
+	// for (int i = 0; i < elements * sizeof(struct svm_node); i++)
+	// {
+	// 	unsigned char *p = (unsigned char *)x_space;
+	// 	printf("0x%x,", p[i]);
+	// }
+	// printf("\n");
+
+	// for (int i = 0; i < m; i++)
+	// {
+	// 	for (int j = 0; j < l; j++)
+	// 	{
+	// 		printf("model->sv_coef[%d][%d] --> %lf \n", i, j, model->sv_coef[i][j]);
+	// 	}
+	// }
+
+	// for (int i = 0; i < m; i++)
+	// {
+	// 	printf("model->sv_coef[%d] \n", i);
+	// 	unsigned char *p = (unsigned char *)model->sv_coef[i];
+	// 	for (int j = 0; j < l * sizeof(double); j++)
+	// 	{
+	// 		printf("0x%x,", p[j]);
+	// 	}
+	// 	printf("\n");
+	// }
 
 	model->free_sv = 1; // XXX
 	return model;

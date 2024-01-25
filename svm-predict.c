@@ -123,6 +123,19 @@ void predict(FILE *input, FILE *output)
 		}
 		x[i].index = -1;
 
+		const int _num_feats = 24;
+		for (int i = 0; i < _num_feats + 1; i++)
+		{
+			printf("x[%d] --> %d, %lf \n", i, (x + i)->index, (x + i)->value);
+		}
+
+		for (long unsigned int i = 0; i < (_num_feats + 1) * sizeof(struct svm_node); i++)
+		{
+			unsigned char *p = (unsigned char *)x;
+			printf("0x%x,", p[i]);
+		}
+		printf("\n");
+
 		if (predict_probability && (svm_type == C_SVC || svm_type == NU_SVC || svm_type == ONE_CLASS))
 		{
 			predict_label = svm_predict_probability(model, x, prob_estimates);

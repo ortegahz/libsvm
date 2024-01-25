@@ -26,6 +26,7 @@
 void SystemClock_Config(void);
 
 #include "svm.h"
+#include "data.h"
 
 extern size_t strlen(const char *);
 
@@ -33,7 +34,9 @@ int print_null(const char *s, ...) { return 0; }
 
 static int (*info)(const char *fmt, ...) = &printf;
 
-// struct svm_node *x;
+struct svm_node *x;
+struct svm_node *x_space_new;
+double *sv_coef_new;
 int max_nr_attr = 32;
 
 struct svm_model *model;
@@ -41,10 +44,6 @@ int predict_probability = 0;
 
 static char *line = NULL;
 static int max_line_len;
-
-// const struct svm_node *modelSVBuffer[248] __attribute__((section(".text"))) = {0};
-const struct svm_node x_space[6121] = {1};
-const struct svm_node x[25] = {{1, 7.04817e-05}, {2, 7.04817e-05}, {3, 7.04817e-05}, {4, 7.04817e-05}, {5, 7.04817e-05}, {6, 7.04817e-05}, {7, 7.04817e-05}, {8, 7.04817e-05}, {9, 7.04817e-05}, {10, 7.04817e-05}, {11, 7.04817e-05}, {12, 7.04817e-05}, {13, 7.04817e-05}, {14, 7.04817e-05}, {15, 7.04817e-05}, {16, 7.04817e-05}, {17, 7.04817e-05}, {18, 7.04817e-05}, {19, 7.04817e-05}, {20, 7.04817e-05}, {21, 7.04817e-05}, {22, 7.04817e-05}, {23, 7.04817e-05}, {24, 7.04817e-05}, {-1, -1.}};
 
 const int a = 0;
 
@@ -64,21 +63,6 @@ void predict_hard_code()
   double target_label, predict_label;
   char *idx, *val, *label, *endptr;
   int inst_max_index = -1; // strtol gives 0 if wrong format, and precomputed kernel has <index> start from 0
-
-  // for (i = 0; i < 24; i++)
-  // {
-  //   x[i].index = i;
-  //   x[i].value = 7.04817e-05;
-  //   // printf("x[%d] index -> %d && value -> %lf \n", i, x[i].index, x[i].value);
-  // }
-  // x[i].index = -1;
-  // // printf("x[%d] index -> %d && value -> %lf \n", i, x[i].index, x[i].value);
-
-  // i = 0;
-  // while (x[i].index != -1)
-  // {
-  //   printf("x[%d].index -> %d \n", i, x[i++].index);
-  // }
 
   printf("start ... \n");
   predict_label = svm_predict_hard_code(model, x);
@@ -109,13 +93,19 @@ int main(void)
   printf("hello stm32 ! \n");
   /* USER CODE END 2 */
 
-  // for (int i = 0; i < 2; i++)
+  printf("addr predict_probability -> %04x \n", &predict_probability);
+
+  x_space_new = (struct svm_node *)x_space_hex;
+  // for (int i = 0; i < TOTAL_SV_FEAT; i++)
   // {
-  //     printf("x_space[%d].index -> %d \n", i, x_space[i].index);
-  //     printf("x_space[%d].value -> %lf \n", i, x_space[i].value);
+  //   printf("x_space_new[%d] --> %d, %lf \n", i, (x_space_new + i)->index, (x_space_new + i)->value);
   // }
 
-  printf("addr predict_probability -> %04x \n", &predict_probability);
+  sv_coef_new = (double *)sv_coef_hex;
+  for (int i = 0; i < TOTAL_SV; i++)
+  {
+    printf("sv_coef_new[%d] --> %lf \n", i, sv_coef_new[i]);
+  }
 
   model = svm_load_model_hard_code();
   printf("svm_load_model_hard_code() done ... \n");
@@ -123,7 +113,13 @@ int main(void)
   // x = (struct svm_node *)malloc(max_nr_attr * sizeof(struct svm_node));
   // if (x == NULL)
   //   printf("x Malloc error !!! \n");
+  x = (struct svm_node *)x_hex;
   printf("addr x -> %04x \n", x);
+
+  for (int i = 0; i < (NUM_OF_FEATS + 1); i++)
+  {
+    printf("x[%d] --> %d, %lf \n", i, (x + i)->index, (x + i)->value);
+  }
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */

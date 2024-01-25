@@ -1,8 +1,7 @@
 #include "svm.h"
 
-// extern struct svm_node *modelSVBuffer[];
-extern struct svm_node x_space[];
-extern struct svm_node x[];
+extern struct svm_node *x_space_new;
+extern double *sv_coef_new;
 
 #define Malloc(type, n) (type *)malloc((n) * sizeof(type))
 
@@ -77,7 +76,11 @@ struct svm_model *svm_load_model_hard_code()
 		printf("model->sv_coef Malloc error !!! \n");
 	int i;
 	for (i = 0; i < m; i++)
-		model->sv_coef[i] = Malloc(double, l);
+	{
+		// model->sv_coef[i] = Malloc(double, l);
+		model->sv_coef[i] = sv_coef_new;
+		printf("addr model->sv_coef[i] -> %04x \n", model->sv_coef[i]);
+	}
 
 	model->SV = Malloc(struct svm_node *, l);
 	if (model->SV == NULL)
@@ -89,30 +92,32 @@ struct svm_model *svm_load_model_hard_code()
 	// if (x_space== NULL) printf("x_space Malloc error !!! \n");
 
 	printf("addr model->SV -> %04x \n", model->SV);
-	printf("addr x_space -> %04x \n", x_space);
+	// printf("addr x_space -> %04x \n", x_space);
 
 	printf("step 3 ... \n");
-	int j = 0;
-	for (i = 0; i < l; i++)
+	// int j = 0;
+	for (int j = 0, i = 0; i < l; i++)
 	{
-		model->SV[i] = &x_space[j];
-		model->sv_coef[0][i] = 2048;
-		for (int k = 0; k < 24; k++)
-		{
-			double val = 6.58069e-05;
-			x_space[j].index = k + 1;
-			x_space[j].value = val;
-			// struct svm_node *p = x_space + j;
-			// p->index = k + 1;
-			// p->value = val;
-			// model->SV[i][j].index = k + 1;
-			// model->SV[i][j].value = val;
-			// printf("x_space[%d] index -> %d && value -> %lf \n", j, x_space[j].index, x_space[j].value);
-			// printf("model->SV[%d][%d] index -> %d && value -> %lf \n", i, j, model->SV[i][j].index, model->SV[i][j].value);
-			// printf("p index -> %d && value -> %lf \n", p->index, p->value);
-			++j;
-		}
-		x_space[j++].index = -1;
+		model->SV[i] = &x_space_new[j];
+		while (x_space_new[j++].index != -1);
+
+		// model->sv_coef[0][i] = 2048;
+		// for (int k = 0; k < 24; k++)
+		// {
+		// 	double val = 6.58069e-05;
+		// 	x_space[j].index = k + 1;
+		// 	x_space[j].value = val;
+		// 	// struct svm_node *p = x_space + j;
+		// 	// p->index = k + 1;
+		// 	// p->value = val;
+		// 	// model->SV[i][j].index = k + 1;
+		// 	// model->SV[i][j].value = val;
+		// 	// printf("x_space[%d] index -> %d && value -> %lf \n", j, x_space[j].index, x_space[j].value);
+		// 	// printf("model->SV[%d][%d] index -> %d && value -> %lf \n", i, j, model->SV[i][j].index, model->SV[i][j].value);
+		// 	// printf("p index -> %d && value -> %lf \n", p->index, p->value);
+		// 	++j;
+		// }
+		// x_space[j++].index = -1;
 		// printf("x_space[%d] index -> %d && value -> %lf \n", j, x_space[j].index, x_space[j].value);
 	}
 
@@ -121,12 +126,12 @@ struct svm_model *svm_load_model_hard_code()
 	// 	printf("x_space[%i] index -> %d && value -> %lf \n", i, x_space[i].index, x_space[i].value);
 	// }
 
-	// for (i = 0; i < l; i++)
+	// for (int i = 0; i < l; i++)
 	// {
-	// 	for (int k = 0; k < 25; k++)
+	// 	int k = 0;
+	// 	while (model->SV[i][k++].index != -1)
 	// 	{
-	// 		printf("model->SV[%d][%d].index -> %d \n", i, k, model->SV[i][k].index);
-	// 		printf("model->SV[%d][%d].value -> %lf \n", i, k, model->SV[i][k].value);
+	// 		printf("model->SV[%d][%d] index -> %d and value -> %lf \n", i, k - 1, model->SV[i][k - 1].index, model->SV[i][k - 1].value);
 	// 	}
 	// }
 
@@ -159,12 +164,12 @@ double k_function_hard_code(const struct svm_node *x, const struct svm_node *y,
 		++x;
 	}
 
-	// while (y->index != -1)
-	// {
-	// 	// printf("y->index -> %d \n", y->index);
-	// 	sum += y->value * y->value;
-	// 	++y;
-	// }
+	while (y->index != -1)
+	{
+		// printf("y->index -> %d \n", y->index);
+		sum += y->value * y->value;
+		++y;
+	}
 
 	return exp(-param->gamma * sum);
 }
