@@ -3219,36 +3219,36 @@ svm_model *svm_load_model(const char *model_file_name)
 	if (ferror(fp) != 0 || fclose(fp) != 0)
 		return NULL;
 
-	// for (int i = 0; i < elements; i++)
-	// {
-	// 	printf("x_space[%d] --> %d, %lf \n", i, (x_space + i)->index, (x_space + i)->value);
-	// }
+	for (int i = 0; i < elements; i++)
+	{
+		printf("x_space[%d] --> %d, %lf \n", i, (x_space + i)->index, (x_space + i)->value);
+	}
+	printf("<python parser mark>,x_space,%d \n", elements);
+	for (long unsigned int i = 0; i < elements * sizeof(struct svm_node); i++)
+	{
+		unsigned char *p = (unsigned char *)x_space;
+		printf("0x%x,", p[i]);
+	}
+	printf("\n");
 
-	// for (long unsigned int i = 0; i < elements * sizeof(struct svm_node); i++)
-	// {
-	// 	unsigned char *p = (unsigned char *)x_space;
-	// 	printf("0x%x,", p[i]);
-	// }
-	// printf("\n");
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < l; j++)
+		{
+			printf("model->sv_coef[%d][%d] --> %lf \n", i, j, model->sv_coef[i][j]);
+		}
+	}
 
-	// for (int i = 0; i < m; i++)
-	// {
-	// 	for (int j = 0; j < l; j++)
-	// 	{
-	// 		printf("model->sv_coef[%d][%d] --> %lf \n", i, j, model->sv_coef[i][j]);
-	// 	}
-	// }
-
-	// for (int i = 0; i < m; i++)
-	// {
-	// 	printf("model->sv_coef[%d] \n", i);
-	// 	unsigned char *p = (unsigned char *)model->sv_coef[i];
-	// 	for (long unsigned int j = 0; j < l * sizeof(double); j++)
-	// 	{
-	// 		printf("0x%x,", p[j]);
-	// 	}
-	// 	printf("\n");
-	// }
+	for (int i = 0; i < m; i++)
+	{
+		printf("<python parser mark>,sv_coef[%d],%d \n", i, l);
+		unsigned char *p = (unsigned char *)model->sv_coef[i];
+		for (long unsigned int j = 0; j < l * sizeof(double); j++)
+		{
+			printf("0x%x,", p[j]);
+		}
+		printf("\n");
+	}
 
 	model->free_sv = 1; // XXX
 	return model;
