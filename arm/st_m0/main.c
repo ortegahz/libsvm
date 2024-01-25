@@ -56,7 +56,6 @@ void predict_hard_code()
 
   int svm_type = 0;
   int nr_class = 2;
-  double *prob_estimates = NULL;
   int j;
 
   int i = 0;
@@ -67,6 +66,11 @@ void predict_hard_code()
   printf("start ... \n");
   predict_label = svm_predict_hard_code(model, x);
   printf("end ... \n");
+
+  // double *prob_estimates = NULL;
+  // predict_label = svm_predict_probability_hard_code(model, x, prob_estimates);
+	// if (predict_probability)
+	// 	free(prob_estimates);
 }
 
 /**

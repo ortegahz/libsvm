@@ -3,6 +3,9 @@
 
 #define LIBSVM_VERSION 332
 
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+
 #define NULL ((void *)0)
 
 #ifdef __cplusplus
@@ -105,8 +108,11 @@ extern "C"
 	double svm_get_svr_probability(const struct svm_model *model);
 
 	double svm_predict_values(const struct svm_model *model, const struct svm_node *x, double *dec_values);
+	double svm_predict_values_hard_code(const struct svm_model *model, const struct svm_node *x, double *dec_values);
 	double svm_predict(const struct svm_model *model, const struct svm_node *x);
 	double svm_predict_probability(const struct svm_model *model, const struct svm_node *x, double *prob_estimates);
+	double svm_predict_probability_hard_code(const struct svm_model *model, const struct svm_node *x, double *prob_estimates);
+	double svm_predict_hard_code(const struct svm_model *model, const struct svm_node *x);
 
 	void svm_free_model_content(struct svm_model *model_ptr);
 	void svm_free_and_destroy_model(struct svm_model **model_ptr_ptr);

@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "svm.h"
 
 extern struct svm_node *x_space_new;
@@ -99,7 +101,8 @@ struct svm_model *svm_load_model_hard_code()
 	for (int j = 0, i = 0; i < l; i++)
 	{
 		model->SV[i] = &x_space_new[j];
-		while (x_space_new[j++].index != -1);
+		while (x_space_new[j++].index != -1)
+			;
 
 		// model->sv_coef[0][i] = 2048;
 		// for (int k = 0; k < 24; k++)
@@ -145,28 +148,38 @@ double k_function_hard_code(const struct svm_node *x, const struct svm_node *y,
 							const struct svm_parameter *param)
 {
 	double sum = 0;
-
-	// while (x->index != -1 && y->index != -1)
-	while (x->index != -1)
-	// for (int i = 0; i < 25; i++)
+	while (x->index != -1 && y->index != -1)
 	{
-		double d = x->value - y->value;
-		// double d = x->value - 0.56;
-		sum += d * d;
-		++x;
-		++y;
+		if (x->index == y->index)
+		{
+			double d = x->value - y->value;
+			sum += d * d;
+			++x;
+			++y;
+		}
+		else
+		{
+			if (x->index > y->index)
+			{
+				sum += y->value * y->value;
+				++y;
+			}
+			else
+			{
+				sum += x->value * x->value;
+				++x;
+			}
+		}
 	}
 
 	while (x->index != -1)
 	{
-		// printf("x->index -> %d \n", x->index);
 		sum += x->value * x->value;
 		++x;
 	}
 
 	while (y->index != -1)
 	{
-		// printf("y->index -> %d \n", y->index);
 		sum += y->value * y->value;
 		++y;
 	}
@@ -183,8 +196,13 @@ double svm_predict_values_hard_code(const struct svm_model *model, const struct 
 
 	printf("svm_predict_values_hard_code step 1 \n");
 	double *kvalue = Malloc(double, l);
+	if (kvalue == NULL)
+		printf("kvalue Malloc error !!! \n");
 	for (i = 0; i < l; i++)
+	{
 		kvalue[i] = k_function_hard_code(x, model->SV[i], &model->param);
+		// printf("kvalue[%d] --> %lf \n", i, kvalue[i]);
+	}
 
 	printf("svm_predict_values_hard_code step 2 \n");
 
@@ -252,4 +270,57 @@ double svm_predict_hard_code(const struct svm_model *model, const struct svm_nod
 
 	free(dec_values);
 	return pred_result;
+}
+
+static double sigmoid_predict(double decision_value, double A, double B)
+{
+	// double fApB = decision_value*A+B;
+	// // 1-p used later; avoid catastrophic cancellation
+	// printf("fApB --> %lf \n", fApB);
+	// if (fApB >= 0)
+	// 	return exp(-fApB)/(1.0+exp(-fApB));
+	// else
+	// 	return 1.0/(1+exp(fApB)) ;
+
+	return 1.0 / (1 + exp(-decision_value));
+}
+
+double svm_predict_probability_hard_code(const struct svm_model *model, const struct svm_node *x, double *prob_estimates)
+{
+	int i;
+	int nr_class = model->nr_class;
+	double *dec_values = Malloc(double, nr_class *(nr_class - 1) / 2);
+
+	double pred_result = svm_predict_values_hard_code(model, x, dec_values);
+	printf("pred_result -> %lf\n", pred_result);
+	printf("*dec_values -> %lf\n", *dec_values);
+
+	double min_prob = 1e-7;
+	double **pairwise_prob = Malloc(double *, nr_class);
+	for (i = 0; i < nr_class; i++)
+		pairwise_prob[i] = Malloc(double, nr_class);
+	int k = 0;
+	for (i = 0; i < nr_class; i++)
+		for (int j = i + 1; j < nr_class; j++)
+		{
+			printf("sigmoid_predict(dec_values[k],model->probA[k],model->probB[k]) --> %lf \n", sigmoid_predict(dec_values[k], model->probA[k], model->probB[k]));
+			pairwise_prob[i][j] = min(max(sigmoid_predict(dec_values[k], model->probA[k], model->probB[k]), min_prob), 1 - min_prob);
+			pairwise_prob[j][i] = 1 - pairwise_prob[i][j];
+			k++;
+		}
+	prob_estimates[0] = pairwise_prob[0][1];
+	prob_estimates[1] = pairwise_prob[1][0];
+
+	printf("prob_estimates[0] --> %lf \n", prob_estimates[0]);
+	printf("prob_estimates[1] --> %lf \n", prob_estimates[1]);
+	int prob_max_idx = 0;
+	for (i = 1; i < nr_class; i++)
+		if (prob_estimates[i] > prob_estimates[prob_max_idx])
+			prob_max_idx = i;
+	for (i = 0; i < nr_class; i++)
+		free(pairwise_prob[i]);
+	free(dec_values);
+	free(pairwise_prob);
+	printf("model->label[prob_max_idx] --> %d \n", model->label[prob_max_idx]);
+	return model->label[prob_max_idx];
 }
